@@ -4,17 +4,35 @@ A Discord bot for our College Football 27 dynasty league.
 
 ## Commands
 
-| Command   | What it does                     |
-|-----------|----------------------------------|
-| `/ping`   | Check the bot is alive           |
-| `/uptime` | How long the bot has been running |
-| `/help`   | List commands                    |
+| Command              | What it does                                                   |
+|----------------------|----------------------------------------------------------------|
+| `/matchups [week]`   | Show user games for a week, no pings                           |
+| `/announce [week]`   | Post a week's matchups and ping each coach (Manage Server only) |
+| `/coaches`           | List every coach and their team                                |
+| `/ping`              | Check the bot is alive                                         |
+| `/uptime`            | How long the bot has been running                              |
+| `/help`              | List commands                                                  |
+
+`week` defaults to `current_week` on the sheet's **Config** tab.
+
+## The dynasty sheet
+
+The bot reads the Google Sheet published to the web (`SHEET_URL`), cached for 60 seconds.
+Google can take a few minutes to publish edits.
+
+- **Users**: `discord_id` can be a Discord username or numeric user ID (IDs are most reliable for pings).
+- **Teams**: team codes used everywhere else.
+- **Games**: enter each user team's schedule preseason with `status = Scheduled`, then fill in
+  scores and set `status = Final` as weeks are played. A user with no game in a week is on a bye.
+- **Config**: `current_season` and `current_week`.
 
 ## Project layout
 
 ```
 bot.py              # Entry point: creates the bot, loads cogs, syncs slash commands
 config.py           # Reads settings from .env
+sheets.py           # Reads tabs from the published Google Sheet
+dynasty.py          # Users / Teams / Games models and weekly matchup logic
 cogs/               # Feature modules (one file per group of commands)
 deploy/             # systemd service for running on the Linux server
 ```
