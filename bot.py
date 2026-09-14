@@ -20,7 +20,7 @@ class DynastyBot(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True  # Requires "Server Members Intent" in the Developer Portal
         super().__init__(command_prefix=commands.when_mentioned, intents=intents, help_command=None)
-        self.guild_id = settings.guild_id
+        self.guild_ids = settings.guild_ids
         self.sheet = PublishedSheet(settings.sheet_url)
         self.dynasty = Dynasty(self.sheet)
 
@@ -32,14 +32,18 @@ class DynastyBot(commands.Bot):
         for ext in EXTENSIONS:
             await self.load_extension(ext)
 
-        # Syncing to a single guild is instant; global sync can take a while to show up.
-        if self.guild_id:
-            guild = discord.Object(id=self.guild_id)
-            self.tree.copy_global_to(guild=guild)
-            synced = await self.tree.sync(guild=guild)
-        else:
+        # Syncing to specific guilds is instant; global sync can take a while to show up.
+        if not self.guild_ids:
             synced = await self.tree.sync()
-        log.info("Synced %d slash command(s)", len(synced))
+            log.info("Synced %d slash command(s) globally", len(synced))
+        for guild_id in self.guild_ids:
+            guild = discord.Object(id=guild_id)
+            self.tree.copy_global_to(guild=guild)
+            try:
+                synced = await self.tree.sync(guild=guild)
+                log.info("Synced %d slash command(s) to server %s", len(synced), guild_id)
+            except discord.Forbidden:
+                log.error("Can't sync commands to server %s: is the bot invited there?", guild_id)
 
     async def on_ready(self) -> None:
         log.info("Logged in as %s (id %s)", self.user, self.user.id)

@@ -9,7 +9,7 @@ load_dotenv()
 @dataclass(frozen=True)
 class Settings:
     token: str
-    guild_id: int | None
+    guild_ids: list[int]
     sheet_url: str
 
 
@@ -22,5 +22,6 @@ def load_settings() -> Settings:
     if not sheet_url:
         raise SystemExit("SHEET_URL is not set. Use the sheet's File > Share > Publish to web link.")
 
-    guild_id = os.getenv("GUILD_ID", "").strip()
-    return Settings(token=token, guild_id=int(guild_id) if guild_id else None, sheet_url=sheet_url)
+    # One or more server IDs, comma-separated
+    guild_ids = [int(part) for part in os.getenv("GUILD_ID", "").replace(" ", "").split(",") if part]
+    return Settings(token=token, guild_ids=guild_ids, sheet_url=sheet_url)
