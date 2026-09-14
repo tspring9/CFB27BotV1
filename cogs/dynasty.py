@@ -13,8 +13,9 @@ def mention(guild: discord.Guild | None, user: User) -> str:
     """@mention a user from the sheet; the sheet may hold a numeric ID or a username."""
     if user.discord_id.isdigit():
         return f"<@{user.discord_id}>"
-    member = guild.get_member_named(user.discord_id) if guild else None
-    return member.mention if member else f"@{user.name}"
+    wanted = user.discord_id.lower().lstrip("@")
+    member = next((m for m in guild.members if m.name.lower() == wanted), None) if guild else None
+    return member.mention if member else f"@{user.discord_id}"
 
 
 def format_matchup(matchup: Matchup, teams: dict[str, Team], guild: discord.Guild | None) -> str:
@@ -30,7 +31,7 @@ def format_matchup(matchup: Matchup, teams: dict[str, Team], guild: discord.Guil
 
     away = side(game.away_team, game.away_rank, matchup.away_user)
     home = side(game.home_team, game.home_rank, matchup.home_user)
-    line = f"🏈 {away} {'vs' if game.neutral_site else 'at'} {home}"
+    line = f"{away} {'vs' if game.neutral_site else 'at'} {home}"
     if game.away_score and game.home_score:
         line += f" — **{game.away_score}-{game.home_score}** ({game.status or 'Final'})"
     return line

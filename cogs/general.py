@@ -13,7 +13,7 @@ class General(commands.Cog):
     @app_commands.command(name="ping", description="Check that the bot is alive")
     async def ping(self, interaction: discord.Interaction) -> None:
         latency_ms = round(self.bot.latency * 1000)
-        await interaction.response.send_message(f"🏈 Pong! `{latency_ms} ms`", ephemeral=True)
+        await interaction.response.send_message(f"Pong! `{latency_ms} ms`", ephemeral=True)
 
     @app_commands.command(name="uptime", description="How long the bot has been running")
     async def uptime(self, interaction: discord.Interaction) -> None:
