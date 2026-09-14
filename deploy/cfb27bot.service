@@ -1,0 +1,16 @@
+[Unit]
+Description=CFB 27 Dynasty Discord Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tomne93
+WorkingDirectory=/home/tomne93/CFB27BotV1
+ExecStart=/home/tomne93/CFB27BotV1/.venv/bin/python bot.py
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
