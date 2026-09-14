@@ -11,3 +11,7 @@ venv/
 .vscode/
 .idea/
 .DS_Store
+
+# Google service account key
+google-credentials.json
+*-credentials.json
