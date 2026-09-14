@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from dynasty import Matchup, Team, User, week_matchups
+from dynasty import Matchup, Team, User, clean_week, week_matchups
 from sheets import SheetError
 
 SHEET_ERRORS = (SheetError, aiohttp.ClientError, TimeoutError)
@@ -44,7 +44,7 @@ class DynastyCog(commands.Cog, name="Dynasty"):
     async def _week_message(self, guild: discord.Guild | None, week: str | None) -> str:
         config = await self.dynasty.config()
         season = config.get("current_season", "")
-        week = week or config.get("current_week", "")
+        week = clean_week(week or config.get("current_week", ""))
         league = config.get("league_name") or "Dynasty"
 
         users, teams, games = await self.dynasty.users(), await self.dynasty.teams(), await self.dynasty.games()

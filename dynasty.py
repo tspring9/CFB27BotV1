@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 
 from sheets import PublishedSheet
@@ -47,10 +48,15 @@ def _is_example(row: dict[str, str]) -> bool:
     return row.get("notes", "").lower().startswith("example row")
 
 
+def clean_week(week: str) -> str:
+    """'week 1' / 'Wk 01' / 'W1' -> '1'; 'Bowl' stays 'Bowl'."""
+    week = re.sub(r"^(week|wk|w)\s*(?=\d)", "", week.strip(), flags=re.IGNORECASE)
+    return str(int(week)) if week.isdigit() else week
+
+
 def normalize_week(week: str) -> str:
-    """'01' -> '1', 'CCG' -> 'ccg' so weeks compare the same however they were typed."""
-    week = week.strip()
-    return str(int(week)) if week.isdigit() else week.lower()
+    """Comparison key so weeks match however they were typed."""
+    return clean_week(week).lower()
 
 
 class Dynasty:
